@@ -11,7 +11,7 @@ OBJBIN=$ROOT/build/bin-obj
 
 mkdir $ROOT/build
 mkdir $OBJGCC
-mkdir $OGJBIN
+mkdir $OBJBIN
 mkdir $PREFIX
 
 cd $OBJBIN

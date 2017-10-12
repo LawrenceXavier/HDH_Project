@@ -9,6 +9,10 @@ BINDIR=$ROOT/lib/binutils-2.11.2
 OBJGCC=$ROOT/build/gcc-obj
 OBJBIN=$ROOT/build/bin-obj
 
+mkdir $ROOT/build
+mkdir $OBJGCC
+mkdir $OGJBIN
+mkdir $PREFIX
 
 cd $OBJBIN
 $BINDIR/configure --host=$HOST --target=$TARGET --prefix=$PREFIX -v

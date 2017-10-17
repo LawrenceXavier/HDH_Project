@@ -51,13 +51,43 @@
 void
 ExceptionHandler(ExceptionType which)
 {
-    int type = machine->ReadRegister(2);
-
-    if ((which == SyscallException) && (type == SC_Halt)) {
-	DEBUG('a', "Shutdown, initiated by user program.\n");
-   	interrupt->Halt();
-    } else {
-	printf("Unexpected user mode exception %d %d\n", which, type);
-	ASSERT(FALSE);
-    }
+	int type = machine->ReadRegister(2);
+//    if ((which == SyscallException) && (type == SC_Halt)) {
+//	DEBUG('a', "Shutdown, initiated by user program.\n");
+//   	interrupt->Halt();
+//    } else {
+//	printf("Unexpected user mode exception %d %d\n", which, type);
+//	ASSERT(FALSE);
+//    }
+//
+	switch (which): {
+		case NoException:
+			break;
+		case SyscallException:
+			break;
+		case PageFaultException: // No valid translation found
+			printf("No valid translation found\n");
+			interrupt->Halt();
+			break;
+		case ReadOnlyException: // Write attempted to page marked "read-only"
+			printf("Write attempted to page marked \"read-only\"\n");
+			interrupt->Halt();
+			break;
+		case BusErrorException: // Translation resulted in an invalid physical address
+			printf("Translation resulted in an invalid physical address\n");
+			interrupt->Halt();
+			break;
+		case AddressErrorException: // Unaligned reference or one that was beyond the end of the address space\n");
+			printf("Unaligned reference or one that was beyond the end of the address space\n");
+			interrupt->Halt();
+			break;
+		case OverflowException: // Integer overflow in add or sub.
+			printf("Integer overflow in add or sub.\n");
+			interrupt->Halt();
+			break;
+		case IllegalInstrException: // Unimplemented or reserved instr.
+			printf("Unimplemented or reserved instr.\n");
+			interrupt->Halt();
+			break;
+	}
 }

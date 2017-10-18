@@ -60,10 +60,8 @@ ExceptionHandler(ExceptionType which)
 //	ASSERT(FALSE);
 //    }
 //
-	switch (which): {
+	switch (which) {
 		case NoException:
-			break;
-		case SyscallException:
 			break;
 		case PageFaultException: // No valid translation found
 			printf("No valid translation found\n");
@@ -89,5 +87,22 @@ ExceptionHandler(ExceptionType which)
 			printf("Unimplemented or reserved instr.\n");
 			interrupt->Halt();
 			break;
+		case SyscallException:
+			switch (type) {
+			case SC_Halt:
+				interrupt->Halt();
+				break;
+			default:
+				printf("Unexpected user mode exception %d %d\n", which, type);
+				ASSERT(FALSE);
+				break;
+
+			}
+			break;
+		default:
+			printf("Unexpected user mode exception %d %d\n", which, type);
+			ASSERT(FALSE);
+			break;
+
 	}
 }

@@ -78,12 +78,8 @@ readchar: readchar.o start.o
 	$(LD) $(LDFLAGS) start.o readchar.o -o readchar.coff
 	../bin/coff2noff readchar.coff readchar
 
-<<<<<<< HEAD
-
-=======
 printstring.o: printstring.c
 	$(CC) $(CFLAGS) -c printstring.c
 printstring: printstring.o start.o
 	$(LD) $(LDFLAGS) start.o printstring.o -o printstring.coff
 	../bin/coff2noff printstring.coff printstring
->>>>>>> 868bfc1a1dc0da0071efa78845bb23b5e8d73c86

@@ -172,6 +172,7 @@ SyscallPrintInt()
 void
 SyscallReadInt()
 {
+	DEBUG('u', "Get a number!\n");
 	char c;
 	int count, sign, res;
 	do {

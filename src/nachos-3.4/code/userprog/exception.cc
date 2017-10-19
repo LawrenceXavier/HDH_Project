@@ -92,17 +92,27 @@ ExceptionHandler(ExceptionType which)
 			case SC_Halt:
 				interrupt->Halt();
 				break;
+			case SC_ReadInt:
+				break;
+			case SC_PrintInt:
+				break;
+			case SC_ReadChar:
+				break;
+			case SC_PrintChar:
+				break;
+			case SC_ReadString:
+				break;
+			case SC_PrintString:
+				break;
 			default:
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);
 				break;
-
 			}
 			break;
 		default:
 			printf("Unexpected user mode exception %d %d\n", which, type);
 			ASSERT(FALSE);
 			break;
-
 	}
 }

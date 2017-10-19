@@ -30,6 +30,26 @@
 #define SC_Fork		9
 #define SC_Yield	10
 
+/******************** New inserted code here *******************/
+/* Our new defined system calls, included:
+ *	SC_ReadInt: read an integer from console
+ *	SC_PrintInt: print an integer to console
+ *	SC_ReadChar: read a character from console
+ *	SC_PrintChar: print a character to console
+ *	SC_ReadString: read a string from console
+ *	SC_PrintString: write a string to console
+ */
+
+#define SC_ReadInt	11
+#define SC_PrintInt	12
+#define SC_ReadChar	13
+#define SC_PrintChar	14
+#define SC_ReadString	15
+#define SC_PrintString	16
+
+/******************* Break of new inserted code ***************/
+
+
 #ifndef IN_ASM
 
 /* The system call interface.  These are the operations the Nachos
@@ -123,6 +143,22 @@ void Fork(void (*func)());
  * or not. 
  */
 void Yield();		
+
+/*********************** New inserted code here *****************/
+
+int ReadInt();
+
+void PrintInt();
+
+char ReadChar();
+
+void PrintChar();
+
+void ReadString(char buffer[], int length);
+
+void PrintString(char buffer[]);
+
+/*********************** Break of new inserted code *************/
 
 #endif /* IN_ASM */
 

@@ -130,6 +130,59 @@ Yield:
 	j	$31
 	.end Yield
 
+/************** New inserted code here ****************/
+
+	.globl	ReadInt
+	.ent	ReadInt
+ReadInt:
+	addiu $2,$0,SC_ReadInt
+	syscall
+	j	$31
+	.end ReadInt
+
+	.glob	PrintInt
+	.ent	PrintInt
+PrintInt:
+	addiu $2,$0,SC_PrintInt
+	syscall
+	j	$31
+	.end PrintInt
+
+	.glob	ReadChar
+	.ent	ReadChar
+ReadChar:
+	addiu $2,$0,SC_ReadChar
+	syscall
+	j	$31
+	.end ReadChar
+
+	.glob	PrintChar
+	.ent	PrintChar
+PrintChar:
+	addiu $2,$0,SC_PrintChar
+	syscall
+	j	$31
+	.end PrintChar
+
+	.glob	ReadString
+	.ent	ReadString
+ReadString:
+	addiu	$2,$0,SC_ReadString
+	syscall
+	j	$31
+	.end ReadString
+
+	.glob	PrintString
+	.ent	PrintString
+PrintString:
+	addiu	$2,$0,SC_PrintString
+	syscall
+	j	$31
+	.end PrintString
+
+
+/************** Break of new inserted code ************/
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

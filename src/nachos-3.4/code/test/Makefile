@@ -92,3 +92,4 @@ readstring: readstring.o start.o
 	$(LD) $(LDFLAGS) start.o readstring.o -o readstring.coff
 	../bin/coff2noff readstring.coff readstring
 
+

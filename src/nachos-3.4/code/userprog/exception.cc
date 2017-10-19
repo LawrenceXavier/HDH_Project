@@ -112,6 +112,13 @@ SyscallPrintChar()
 	AdjustPCRegs();
 }
 
+void SyscallReadChar() {
+	char c;
+	gSynchConsole->Read(&c, 1);
+	machine->WriteRegister(2, c);
+	AdjustPCRegs();
+}
+
 void
 SyscallPrintInt()
 {
@@ -135,7 +142,6 @@ SyscallPrintInt()
 	}
 	str[len++] = '\0';
 }
-
 
 void
 ExceptionHandler(ExceptionType which)
@@ -186,6 +192,7 @@ ExceptionHandler(ExceptionType which)
 			case SC_PrintInt:
 				break;
 			case SC_ReadChar:
+				SyscallReadChar();
 				break;
 			case SC_PrintChar:
 				SyscallPrintChar();

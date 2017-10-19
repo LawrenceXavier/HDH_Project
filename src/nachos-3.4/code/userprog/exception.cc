@@ -178,7 +178,7 @@ SyscallPrintInt()
 		str[len++] = (char)(abs_number % 10 + '0');
 		abs_number /= 10;
 	} while (abs_number);
-	if (abs_number < 0)
+	if (number < 0)
 		str[len++] = '-';
 	for (i = 0; i < len / 2; ++i) {
 		j = len - i - 1;
@@ -186,7 +186,53 @@ SyscallPrintInt()
 		str[i] = str[j];
 		str[j] = tmp;
 	}
-	str[len++] = '\0';
+	gSynchConsole->Write(str, len);
+	AdjustPCRegs();
+	delete[]str;
+}
+
+void
+SyscallReadInt()
+{
+	char c;
+	int count, sign, res;
+	do {
+		count = gSynchConsole->Read(&c, 1);
+		if (count == -1)
+			break;
+	} while (c == ' ' || c == '\t' || c == '\n' || count == 0);
+
+	
+	if (count == -1 || (!(c == '-' || (c >= '0' && c <= '9')))) {
+		machine->WriteRegister(2, 0);
+		AdjustPCRegs();
+		return;
+	}
+
+	if (c == '-') {
+		sign = -1;
+		count = gSynchConsole->Read(&c, 1);
+	} else {
+		sign = 1;
+	}
+
+	res = 0;
+	while (c >= '0' && c <= '9' && count == 1) {
+		if (res >= 0)
+			res = res * 10 + (int)(c - '0');
+		if (res < 0)
+			res = -1;
+		count = gSynchConsole->Read(&c, 1);
+	}
+
+	if (res >= 0) {
+		res = res * sign;
+		machine->WriteRegister(2, res);
+	}
+	else {
+		machine->WriteRegister(2, 0);
+	}
+	AdjustPCRegs();
 }
 
 void
@@ -234,8 +280,10 @@ ExceptionHandler(ExceptionType which)
 				interrupt->Halt();
 				break;
 			case SC_ReadInt:
+				SyscallReadInt();
 				break;
 			case SC_PrintInt:
+				SyscallPrintInt();
 				break;
 			case SC_ReadChar:
 				SyscallReadChar();

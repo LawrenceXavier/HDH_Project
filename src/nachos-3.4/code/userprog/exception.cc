@@ -24,7 +24,6 @@
 #include "copyright.h"
 #include "system.h"
 #include "syscall.h"
-
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -49,6 +48,19 @@
 //----------------------------------------------------------------------
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
+
+int getlen(int s) {
+	int len = 0;
+	int oneChar;
+	do {
+		machine->ReadMem(s+len, 1, &oneChar);
+		if ((char)oneChar)
+			++len;
+		else
+			break;
+	} while (true);
+	return len;
+}
 
 void
 AdjustPCRegs()
@@ -112,10 +124,22 @@ SyscallPrintChar()
 	AdjustPCRegs();
 }
 
-void SyscallReadChar() {
-	char c;
-	gSynchConsole->Read(&c, 1);
-	machine->WriteRegister(2, c);
+void SyscallReadChar() {	// char ReadChar();
+	char character;
+	gSynchConsole->Read(&character, 1);
+	machine->WriteRegister(2, character); // return character
+	AdjustPCRegs();
+}
+
+void SyscallPrintString() {	// void PrintString(char[] buffer);
+	int strAddr = machine->ReadRegister(4);
+	int len = getlen(strAddr);
+	char* buff = User2System(strAddr, len);
+	int i;
+	for (i = 0; *(buff+i); ++i) 
+		gSynchConsole->Write(buff+i, 1);
+	delete[] buff;
+	machine->WriteRegister(2, 0);
 	AdjustPCRegs();
 }
 
@@ -200,6 +224,7 @@ ExceptionHandler(ExceptionType which)
 			case SC_ReadString:
 				break;
 			case SC_PrintString:
+				SyscallPrintString();
 				break;
 			case SC_Exit:
 				// Not implemented yet

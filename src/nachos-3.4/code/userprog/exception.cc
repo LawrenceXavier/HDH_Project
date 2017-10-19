@@ -61,6 +61,55 @@ AdjustPCRegs()
 	machine->WriteRegister(NextPCReg, pc);
 }
 
+char*
+User2System(int virtAddr, int limit)
+{
+	int i;
+	int oneChar;
+	char *kernelBuf = NULL;
+
+	kernelBuf = new char[limit + 1];
+	if (kernelBuf == NULL)
+		return kernelBuf;
+
+	memset(kernelBuf, 0, limit + 1);
+
+	for (i = 0; i < limit; ++i) {
+		machine->ReadMem(virtAddr + i, 1, &oneChar);
+		kernelBuf[i] = (char)oneChar;
+		if (oneChar == 0)
+			break;
+	}
+
+	return kernelBuf;
+}
+
+int
+System2User(int virtAddr, int len, char *buffer)
+{
+	if (len < 0) return -1;
+	if (len == 0) return len;
+	int i = 0;
+	int oneChar = 0;
+	do {
+		oneChar = (int) buffer[i];
+		machine->WriteMem(virtAddr + i, 1, oneChar);
+		++i;
+	} while (i < len && oneChar != 0);
+
+	return i;
+}
+
+void
+SyscallPrintChar()
+{
+	char character;
+	character = (char)machine->ReadRegister(4);
+	gSynchConsole->Write(&character, 1);
+	machine->WriteRegister(2, 0);
+	AdjustPCRegs();
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -112,6 +161,7 @@ ExceptionHandler(ExceptionType which)
 			case SC_ReadChar:
 				break;
 			case SC_PrintChar:
+				SyscallPrintChar();
 				break;
 			case SC_ReadString:
 				break;

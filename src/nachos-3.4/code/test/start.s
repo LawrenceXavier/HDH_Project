@@ -140,7 +140,7 @@ ReadInt:
 	j	$31
 	.end ReadInt
 
-	.glob	PrintInt
+	.globl	PrintInt
 	.ent	PrintInt
 PrintInt:
 	addiu $2,$0,SC_PrintInt
@@ -148,7 +148,7 @@ PrintInt:
 	j	$31
 	.end PrintInt
 
-	.glob	ReadChar
+	.globl	ReadChar
 	.ent	ReadChar
 ReadChar:
 	addiu $2,$0,SC_ReadChar
@@ -156,7 +156,7 @@ ReadChar:
 	j	$31
 	.end ReadChar
 
-	.glob	PrintChar
+	.globl	PrintChar
 	.ent	PrintChar
 PrintChar:
 	addiu $2,$0,SC_PrintChar
@@ -164,7 +164,7 @@ PrintChar:
 	j	$31
 	.end PrintChar
 
-	.glob	ReadString
+	.globl	ReadString
 	.ent	ReadString
 ReadString:
 	addiu	$2,$0,SC_ReadString
@@ -172,7 +172,7 @@ ReadString:
 	j	$31
 	.end ReadString
 
-	.glob	PrintString
+	.globl	PrintString
 	.ent	PrintString
 PrintString:
 	addiu	$2,$0,SC_PrintString

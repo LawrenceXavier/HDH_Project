@@ -148,11 +148,11 @@ void Yield();
 
 int ReadInt();
 
-void PrintInt();
+void PrintInt(int number);
 
 char ReadChar();
 
-void PrintChar();
+void PrintChar(char character);
 
 void ReadString(char buffer[], int length);
 

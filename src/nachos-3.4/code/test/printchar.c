@@ -8,5 +8,5 @@ main()
 	c = '\n';
 	PrintChar(c);
 	//Halt();
-	//Exit(0);
+	Exit(0);
 }

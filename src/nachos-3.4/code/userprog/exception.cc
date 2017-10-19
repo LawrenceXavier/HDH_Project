@@ -167,6 +167,46 @@ ExceptionHandler(ExceptionType which)
 				break;
 			case SC_PrintString:
 				break;
+			case SC_Exit:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Exec:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Join:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Create:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Open:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Read:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Write:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Close:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Fork:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
+			case SC_Yield:
+				// Not implemented yet
+				interrupt->Halt();
+				break;
 			default:
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);

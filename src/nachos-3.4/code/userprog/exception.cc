@@ -134,11 +134,33 @@ void SyscallReadChar() {	// char ReadChar();
 void SyscallPrintString() {	// void PrintString(char[] buffer);
 	int strAddr = machine->ReadRegister(4);
 	int len = getlen(strAddr);
-	char* buff = User2System(strAddr, len);
-	int i;
-	for (i = 0; *(buff+i); ++i) 
-		gSynchConsole->Write(buff+i, 1);
-	delete[] buff;
+
+	char* kernelBuff = User2System(strAddr, len);
+
+	gSynchConsole->Write(kernelBuff, len);
+
+	delete[] kernelBuff;
+
+	machine->WriteRegister(2, 0);
+	AdjustPCRegs();
+}
+
+void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
+	int strAddr = machine->ReadRegister(4);
+	int len = machine->ReadRegister(5);
+
+	char* kernelBuff = new char[len];
+	memset(kernelBuff, 0, len);
+
+	gSynchConsole->Read(kernelBuff, len);
+	
+	int realLen = System2User(strAddr, len, kernelBuff);	// realLen <= len
+
+	int zero = 0;
+	machine->WriteMem(strAddr+realLen, 1, zero);	// character strAddr[realLen] = 0
+
+	delete[] kernelBuff;
+
 	machine->WriteRegister(2, 0);
 	AdjustPCRegs();
 }
@@ -222,6 +244,7 @@ ExceptionHandler(ExceptionType which)
 				SyscallPrintChar();
 				break;
 			case SC_ReadString:
+				SyscallReadString();
 				break;
 			case SC_PrintString:
 				SyscallPrintString();

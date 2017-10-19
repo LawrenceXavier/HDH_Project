@@ -49,6 +49,19 @@
 //----------------------------------------------------------------------
 
 void
+AdjustPCRegs()
+{
+	int pc;
+
+	pc = machine->ReadRegister(PCReg);
+	machine->WriteRegister(PrevPCReg, pc);
+	pc = machine->ReadRegister(NextPCReg);
+	machine->WriteRegister(PCReg, pc);
+	pc += 4;
+	machine->WriteRegister(NextPCReg, pc);
+}
+
+void
 ExceptionHandler(ExceptionType which)
 {
 	int type = machine->ReadRegister(2);

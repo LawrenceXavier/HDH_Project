@@ -39,6 +39,13 @@ extern Machine* machine;	// user program memory and registers
 extern FileSystem  *fileSystem;
 #endif
 
+/****************** New inserted code here ***************/
+#ifdef USER_PROGRAM
+#include "synchcons.h"
+extern SynchConsole *gSynchConsole;
+#endif
+/****************** Bread of new inserted code ***********/
+
 #ifdef FILESYS
 #include "synchdisk.h"
 extern SynchDisk   *synchDisk;

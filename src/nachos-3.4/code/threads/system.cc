@@ -31,6 +31,12 @@ SynchDisk   *synchDisk;
 Machine *machine;	// user program memory and registers
 #endif
 
+/****************** New inserted code here *********************/
+#ifdef USER_PROGRAM
+SynchConsole *gSynchConsole;
+#endif
+/****************** End of new inserted code *******************/
+
 #ifdef NETWORK
 PostOffice *postOffice;
 #endif
@@ -150,6 +156,13 @@ Initialize(int argc, char **argv)
 #ifdef USER_PROGRAM
     machine = new Machine(debugUserProg);	// this must come first
 #endif
+
+/******************* New inserted code here ****************/
+#ifdef USER_PROGRAM
+    gSynchConsole = new SynchConsole();
+    ASSERT(gSynchConsole != NULL);
+#endif
+/******************* Bread of new inserted code ************/
 
 #ifdef FILESYS
     synchDisk = new SynchDisk("DISK");

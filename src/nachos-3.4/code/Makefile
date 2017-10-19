@@ -22,6 +22,7 @@ all:
 # don't delete executables in "test" in case there is no cross-compiler
 clean:
 	/bin/csh -c "rm -f *~ */{core,nachos,DISK,*.o,swtch.s,*~} test/{*.coff} bin/{coff2flat,coff2noff,disassemble,out}"
+	/bin/csh -c "rm test/halt test/matmult test/printchar test/printstring test/readchar test/readstring test/shell test/sort"
 
 print:
 	/bin/csh -c "$(LPR) Makefile* */Makefile"

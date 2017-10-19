@@ -7,6 +7,6 @@ main()
 	PrintChar(c);
 	c = '\n';
 	PrintChar(c);
-	Halt();
-	return 0;
+	//Halt();
+	//Exit(0);
 }

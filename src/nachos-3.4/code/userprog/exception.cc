@@ -48,6 +48,8 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
+#define ABS(x) ((x) < 0 ? -(x) : (x))
+
 void
 AdjustPCRegs()
 {
@@ -109,6 +111,31 @@ SyscallPrintChar()
 	machine->WriteRegister(2, 0);
 	AdjustPCRegs();
 }
+
+void
+SyscallPrintInt()
+{
+	int number, abs_number, len, i, j;
+	char tmp;
+	number = machine->ReadRegister(4);
+	abs_number = ABS(number);
+	len = 0;
+	char *str = new char[13];
+	do {
+		str[len++] = (char)(abs_number % 10 + '0');
+		abs_number /= 10;
+	} while (abs_number);
+	if (abs_number < 0)
+		str[len++] = '-';
+	for (i = 0; i < len / 2; ++i) {
+		j = len - i - 1;
+		tmp = str[i];
+		str[i] = str[j];
+		str[j] = tmp;
+	}
+	str[len++] = '\0';
+}
+
 
 void
 ExceptionHandler(ExceptionType which)

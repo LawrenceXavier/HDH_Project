@@ -1,7 +1,9 @@
 #include "syscall.h"
 
+char str[100];
+
 int main() {
-	PrintString("How about this\n");
-	PrintString("hello world \n how are you? \n is everything okay?");
+	ReadString(str, 90);
+	PrintString(str);
 	Halt();
 }

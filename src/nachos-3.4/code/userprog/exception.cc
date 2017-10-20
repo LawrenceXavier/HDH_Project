@@ -47,8 +47,12 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
-#define ABS(x) ((x) < 0 ? -(x) : (x))
+#define BLOCK_SIZE	32768
+#define MAX_BLOCK	32
 
+#define ABS(x)		((x) < 0 ? -(x) : (x))
+
+/*
 int getlen(int s) {
 	int len = 0;
 	int oneChar;
@@ -61,6 +65,7 @@ int getlen(int s) {
 	} while (true);
 	return len;
 }
+*/
 
 void
 SyscallPrintChar()
@@ -81,13 +86,18 @@ void SyscallReadChar() {	// char ReadChar();
 
 void SyscallPrintString() {	// void PrintString(char[] buffer);
 	int strAddr = machine->ReadRegister(4);
-	int len = getlen(strAddr);
+	int i;
 
-	char* kernelBuff = machine->User2System(strAddr, len);
-
-	gSynchConsole->Write(kernelBuff, len);
-
-	delete[] kernelBuff;
+	for (i = 0; i < MAX_BLOCK; ++i) {
+		char *kernelBuff = machine->User2System(strAddr + i * BLOCK_SIZE, BLOCK_SIZE);
+		int cnt = 0;
+		while (cnt < BLOCK_SIZE && kernelBuff[cnt] != '\0')
+			++cnt;
+		gSynchConsole->Write(kernelBuff, cnt);
+		if (cnt < BLOCK_SIZE)
+			break;
+		delete[]kernelBuff;
+	}
 
 	machine->WriteRegister(2, 0);
 	machine->AdjustPCRegs();
@@ -97,18 +107,20 @@ void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
 	int strAddr = machine->ReadRegister(4);
 	int len = machine->ReadRegister(5);
 
-	char* kernelBuff = new char[len];
+	char* kernelBuff = new char[len + 1];   // reserve a position for \0
 	memset(kernelBuff, 0, len);
 
-	gSynchConsole->Read(kernelBuff, len);
-	
-	int realLen = machine->System2User(strAddr, len, kernelBuff);	// realLen <= len
+	int realLen = gSynchConsole->Read(kernelBuff, len);	// realLen <= len
+	ASSERT(realLen <= len);
+	kernelBuff[realLen++] = '\0';		// SynchConsole does not add
+						// NULL terminate character,
+						// so we have to handle
 
-	int zero = 0;
-	machine->WriteMem(strAddr+realLen, 1, zero);	// character strAddr[realLen] = 0
+	machine->System2User(strAddr, realLen, kernelBuff);
+						// Move read string into User
+						// Space
 
 	delete[] kernelBuff;
-
 	machine->WriteRegister(2, 0);
 	machine->AdjustPCRegs();
 }
@@ -116,16 +128,16 @@ void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
 void
 SyscallPrintInt()
 {
-	int number, abs_number, len, i, j;
+	int number, tmp_number, len, i, j;
 	char tmp;
 	number = machine->ReadRegister(4);
-	abs_number = ABS(number);
+	tmp_number = number;
 	len = 0;
 	char *str = new char[13];
 	do {
-		str[len++] = (char)(abs_number % 10 + '0');
-		abs_number /= 10;
-	} while (abs_number);
+		str[len++] = (char)(ABS(tmp_number % 10) + '0');
+		tmp_number /= 10;
+	} while (tmp_number);
 	if (number < 0)
 		str[len++] = '-';
 	for (i = 0; i < len / 2; ++i) {
@@ -144,7 +156,7 @@ SyscallReadInt()
 {
 	DEBUG('u', "Get a number!\n");
 	char c;
-	int count, sign, res;
+	int count, res;
 	do {
 		count = gSynchConsole->Read(&c, 1);
 		if (count == -1)
@@ -159,28 +171,29 @@ SyscallReadInt()
 	}
 
 	if (c == '-') {
-		sign = -1;
+		res = 0;
 		count = gSynchConsole->Read(&c, 1);
+		while (c >= '0' && c <= '9' && count == 1) {
+			if (res <= 0)
+				res = res * 10 - (int)(c - '0');
+			count = gSynchConsole->Read(&c, 1);
+		}
+
+		if (res > 0)
+			res = 0;
 	} else {
-		sign = 1;
-	}
+		res = 0;
+		while (c >= '0' && c <= '9' && count == 1) {
+			if (res >= 0)
+				res = res * 10 + (int)(c - '0');
+			count = gSynchConsole->Read(&c, 1);
+		}
 
-	res = 0;
-	while (c >= '0' && c <= '9' && count == 1) {
-		if (res >= 0)
-			res = res * 10 + (int)(c - '0');
 		if (res < 0)
-			res = -1;
-		count = gSynchConsole->Read(&c, 1);
+			res = 0;
 	}
 
-	if (res >= 0) {
-		res = res * sign;
-		machine->WriteRegister(2, res);
-	}
-	else {
-		machine->WriteRegister(2, 0);
-	}
+	machine->WriteRegister(2, res);
 	machine->AdjustPCRegs();
 }
 

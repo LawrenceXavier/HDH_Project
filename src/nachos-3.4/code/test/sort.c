@@ -10,6 +10,7 @@ int main()
 		a[i] = ReadInt();
 		//PrintChar('a');
 	}
+	PrintInt(n); PrintChar('\n');
 	for (i = 0; i + 1 < n; ++i)
 		for (j = i + 1; j < n; ++j)
 			if (a[i] > a[j]) {

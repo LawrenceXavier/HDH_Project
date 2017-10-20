@@ -146,16 +146,32 @@ void Yield();
 
 /*********************** New inserted code here *****************/
 
+/* Read an integer from SynchConsole
+ * The number is read until meet non-digit charater
+ * In case of integer overflow or cannot read number, return 0
+ */
 int ReadInt();
 
+/* Write an integer to SynchConsole */
 void PrintInt(int number);
 
+/* Read a character from SynchConsole */
 char ReadChar();
 
+/* Print a character to SynchConsole */
 void PrintChar(char character);
 
+/* Read string from SynchConsole
+ * String is read at most length charaters or until meet '\001' or '\012'
+ * buffer must be allocate at least (length + 1) characters for the terminate
+ * '\0' charater
+ */
 void ReadString(char buffer[], int length);
 
+/* Print string to SynchConsole
+ * String length is at most 1048576 (see detail at SyscallPrintString in
+ *	exception.cc)
+ */
 void PrintString(char buffer[]);
 
 /*********************** Break of new inserted code *************/

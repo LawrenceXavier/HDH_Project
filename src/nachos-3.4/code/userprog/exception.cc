@@ -52,50 +52,46 @@
 
 #define ABS(x)		((x) < 0 ? -(x) : (x))
 
-/*
-int getlen(int s) {
-	int len = 0;
-	int oneChar;
-	do {
-		machine->ReadMem(s+len, 1, &oneChar);
-		if ((char)oneChar)
-			++len;
-		else
-			break;
-	} while (true);
-	return len;
-}
-*/
-
+/* void PrintChar(char c); */
 void
 SyscallPrintChar()
 {
 	char character;
-	character = (char)machine->ReadRegister(4);
+	character = (char)machine->ReadRegister(4); 
+				// Read input character from register r4
 	gSynchConsole->Write(&character, 1);
+				// Print to SynchConsole
 	machine->WriteRegister(2, 0);
 	machine->AdjustPCRegs();
 }
 
 void SyscallReadChar() {	// char ReadChar();
 	char character;
-	gSynchConsole->Read(&character, 1);
+	gSynchConsole->Read(&character, 1);	// Read a character from SynchConsole
 	machine->WriteRegister(2, character); // return character
 	machine->AdjustPCRegs();
 }
 
 void SyscallPrintString() {	// void PrintString(char[] buffer);
+	// We will try to sequently print a block of BLOCK_SIZE charaters from
+	//	buffer to SynchConsole until we encounter a terminate character
+	// The maximum block can be printed is MAX_BLOCK, so the total number
+	//	of character that can be printed is MAX_BLOCK * BLOCK_SIZE
 	int strAddr = machine->ReadRegister(4);
 	int i;
 
 	for (i = 0; i < MAX_BLOCK; ++i) {
 		char *kernelBuff = machine->User2System(strAddr + i * BLOCK_SIZE, BLOCK_SIZE);
+					// Transfer BLOCK_SIZE characters from
+					//	User Space to Kernel Space
 		int cnt = 0;
 		while (cnt < BLOCK_SIZE && kernelBuff[cnt] != '\0')
-			++cnt;
+			++cnt;		// Count number of characters will be
+					//	printed
 		gSynchConsole->Write(kernelBuff, cnt);
-		if (cnt < BLOCK_SIZE)
-			break;
+					// Print to SynchConsole
+		if (cnt < BLOCK_SIZE)	// If we encouter a terminate character
+			break;		//	we exit
 		delete[]kernelBuff;
 	}
 
@@ -125,52 +121,62 @@ void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
 	machine->AdjustPCRegs();
 }
 
+/* void PrintInt(int number);*/
 void
 SyscallPrintInt()
 {
 	int number, tmp_number, len, i, j;
 	char tmp;
-	number = machine->ReadRegister(4);
+	number = machine->ReadRegister(4); // Read integer from register r4
 	tmp_number = number;
 	len = 0;
 	char *str = new char[13];
 	do {
 		str[len++] = (char)(ABS(tmp_number % 10) + '0');
-		tmp_number /= 10;
+					// Get the last digit and append to array
+		tmp_number /= 10;	// Divide number by 10 to bring the next digit
+					//	become last digit
 	} while (tmp_number);
 	if (number < 0)
-		str[len++] = '-';
+		str[len++] = '-'; // If number < 0 then it should have '-' at begin
+	// The str is storing number in reverse order
+	// Example: number = 1234 -> str = "4321" or number = "-567" -> str = "765-"
+	// Therefore, we have to reverse str in order to get the true display
 	for (i = 0; i < len / 2; ++i) {
 		j = len - i - 1;
 		tmp = str[i];
 		str[i] = str[j];
 		str[j] = tmp;
 	}
-	gSynchConsole->Write(str, len);
+	gSynchConsole->Write(str, len); // Print str to SynchConsole
 	machine->AdjustPCRegs();
 	delete[]str;
 }
 
+/* int ReadInt(); */
 void
 SyscallReadInt()
 {
 	DEBUG('u', "Get a number!\n");
 	char c;
 	int count, res;
+				// First, we have to skip all seperating characters
+				//	include ' ', '\t', '\n'
 	do {
 		count = gSynchConsole->Read(&c, 1);
 		if (count == -1)
 			break;
 	} while (c == ' ' || c == '\t' || c == '\n' || count == 0);
 
-	
 	if (count == -1 || (!(c == '-' || (c >= '0' && c <= '9')))) {
+				// Reach EOF or pointer is at non-number
 		machine->WriteRegister(2, 0);
 		machine->AdjustPCRegs();
 		return;
 	}
 
 	if (c == '-') {
+				// Negative integer
 		res = 0;
 		count = gSynchConsole->Read(&c, 1);
 		while (c >= '0' && c <= '9' && count == 1) {
@@ -179,9 +185,10 @@ SyscallReadInt()
 			count = gSynchConsole->Read(&c, 1);
 		}
 
-		if (res > 0)
+		if (res > 0)	// Integer overflow
 			res = 0;
 	} else {
+				// Positive integer
 		res = 0;
 		while (c >= '0' && c <= '9' && count == 1) {
 			if (res >= 0)
@@ -189,7 +196,7 @@ SyscallReadInt()
 			count = gSynchConsole->Read(&c, 1);
 		}
 
-		if (res < 0)
+		if (res < 0)	// Integer overflow
 			res = 0;
 	}
 
@@ -238,25 +245,25 @@ ExceptionHandler(ExceptionType which)
 			break;
 		case SyscallException:
 			switch (type) {
-			case SC_Halt:
+			case SC_Halt: // Halt machine
 				interrupt->Halt();
 				break;
-			case SC_ReadInt:
+			case SC_ReadInt: // Read an integer
 				SyscallReadInt();
 				break;
-			case SC_PrintInt:
+			case SC_PrintInt: // Print an integer
 				SyscallPrintInt();
 				break;
-			case SC_ReadChar:
+			case SC_ReadChar: // Read a character
 				SyscallReadChar();
 				break;
-			case SC_PrintChar:
+			case SC_PrintChar: // Print a character
 				SyscallPrintChar();
 				break;
-			case SC_ReadString:
+			case SC_ReadString: // Read a string
 				SyscallReadString();
 				break;
-			case SC_PrintString:
+			case SC_PrintString: // Print a string
 				SyscallPrintString();
 				break;
 			case SC_Exit:

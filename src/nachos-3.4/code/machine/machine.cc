@@ -212,3 +212,66 @@ void Machine::WriteRegister(int num, int value)
 	registers[num] = value;
     }
 
+//----------------------------------------------------------------------
+// Machine::User2System/System2User
+//      Copy memories between User and Kernel Space
+//----------------------------------------------------------------------
+
+char*
+Machine::User2System(int virtAddr, int limit)
+{
+	int i;
+	int oneChar;
+	char *kernelBuf = NULL;
+
+	kernelBuf = new char[limit + 1];
+	if (kernelBuf == NULL)
+		return kernelBuf;
+
+	memset(kernelBuf, 0, limit + 1);
+
+	for (i = 0; i < limit; ++i) {
+		ReadMem(virtAddr + i, 1, &oneChar);
+		kernelBuf[i] = (char)oneChar;
+		if (oneChar == 0)
+			break;
+	}
+
+	return kernelBuf;
+}
+
+int
+Machine::System2User(int virtAddr, int len, char *buffer)
+{
+	if (len < 0) return -1;
+	if (len == 0) return len;
+	int i = 0;
+	int oneChar = 0;
+	do {
+		oneChar = (int) buffer[i];
+		WriteMem(virtAddr + i, 1, oneChar);
+		++i;
+	} while (i < len && oneChar != 0);
+
+	return i;
+}
+
+//----------------------------------------------------------------------
+// Machine::AdjustPCRegs
+//      Adjust the program counter register after completing a syscall
+//----------------------------------------------------------------------
+
+void
+Machine::AdjustPCRegs()
+{
+	int pc;
+
+	pc = ReadRegister(PCReg);
+	WriteRegister(PrevPCReg, pc);
+	pc = ReadRegister(NextPCReg);
+	WriteRegister(PCReg, pc);
+
+	pc += 4;
+	WriteRegister(NextPCReg, pc);
+}
+

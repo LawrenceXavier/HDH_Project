@@ -110,6 +110,17 @@ class Machine {
 				// for running user programs
     ~Machine();			// De-allocate the data structures
 
+// Communicate between Kernel Space and User Space
+    void AdjustPCRegs();	// Adjust the program counter after a syscall
+
+    char *User2System(int virtAddr, int limit);
+				// Copy block of memory from User Space
+				// to Kernel Space
+
+    int System2User(int virtAddr, int len, char *buffer);
+				// Copy block of memory from Kernel Space
+				// to User Space
+
 // Routines callable by the Nachos kernel
     void Run();	 		// Run a user program
 

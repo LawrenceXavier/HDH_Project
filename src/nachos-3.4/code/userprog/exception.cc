@@ -63,86 +63,34 @@ int getlen(int s) {
 }
 
 void
-AdjustPCRegs()
-{
-	int pc;
-
-	pc = machine->ReadRegister(PCReg);
-	machine->WriteRegister(PrevPCReg, pc);
-	pc = machine->ReadRegister(NextPCReg);
-	machine->WriteRegister(PCReg, pc);
-	pc += 4;
-	machine->WriteRegister(NextPCReg, pc);
-}
-
-char*
-User2System(int virtAddr, int limit)
-{
-	int i;
-	int oneChar;
-	char *kernelBuf = NULL;
-
-	kernelBuf = new char[limit + 1];
-	if (kernelBuf == NULL)
-		return kernelBuf;
-
-	memset(kernelBuf, 0, limit + 1);
-
-	for (i = 0; i < limit; ++i) {
-		machine->ReadMem(virtAddr + i, 1, &oneChar);
-		kernelBuf[i] = (char)oneChar;
-		if (oneChar == 0)
-			break;
-	}
-
-	return kernelBuf;
-}
-
-int
-System2User(int virtAddr, int len, char *buffer)
-{
-	if (len < 0) return -1;
-	if (len == 0) return len;
-	int i = 0;
-	int oneChar = 0;
-	do {
-		oneChar = (int) buffer[i];
-		machine->WriteMem(virtAddr + i, 1, oneChar);
-		++i;
-	} while (i < len && oneChar != 0);
-
-	return i;
-}
-
-void
 SyscallPrintChar()
 {
 	char character;
 	character = (char)machine->ReadRegister(4);
 	gSynchConsole->Write(&character, 1);
 	machine->WriteRegister(2, 0);
-	AdjustPCRegs();
+	machine->AdjustPCRegs();
 }
 
 void SyscallReadChar() {	// char ReadChar();
 	char character;
 	gSynchConsole->Read(&character, 1);
 	machine->WriteRegister(2, character); // return character
-	AdjustPCRegs();
+	machine->AdjustPCRegs();
 }
 
 void SyscallPrintString() {	// void PrintString(char[] buffer);
 	int strAddr = machine->ReadRegister(4);
 	int len = getlen(strAddr);
 
-	char* kernelBuff = User2System(strAddr, len);
+	char* kernelBuff = machine->User2System(strAddr, len);
 
 	gSynchConsole->Write(kernelBuff, len);
 
 	delete[] kernelBuff;
 
 	machine->WriteRegister(2, 0);
-	AdjustPCRegs();
+	machine->AdjustPCRegs();
 }
 
 void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
@@ -154,7 +102,7 @@ void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
 
 	gSynchConsole->Read(kernelBuff, len);
 	
-	int realLen = System2User(strAddr, len, kernelBuff);	// realLen <= len
+	int realLen = machine->System2User(strAddr, len, kernelBuff);	// realLen <= len
 
 	int zero = 0;
 	machine->WriteMem(strAddr+realLen, 1, zero);	// character strAddr[realLen] = 0
@@ -162,7 +110,7 @@ void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
 	delete[] kernelBuff;
 
 	machine->WriteRegister(2, 0);
-	AdjustPCRegs();
+	machine->AdjustPCRegs();
 }
 
 void
@@ -187,7 +135,7 @@ SyscallPrintInt()
 		str[j] = tmp;
 	}
 	gSynchConsole->Write(str, len);
-	AdjustPCRegs();
+	machine->AdjustPCRegs();
 	delete[]str;
 }
 
@@ -206,7 +154,7 @@ SyscallReadInt()
 	
 	if (count == -1 || (!(c == '-' || (c >= '0' && c <= '9')))) {
 		machine->WriteRegister(2, 0);
-		AdjustPCRegs();
+		machine->AdjustPCRegs();
 		return;
 	}
 
@@ -233,7 +181,7 @@ SyscallReadInt()
 	else {
 		machine->WriteRegister(2, 0);
 	}
-	AdjustPCRegs();
+	machine->AdjustPCRegs();
 }
 
 void

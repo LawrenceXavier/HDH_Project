@@ -112,8 +112,10 @@ SynchConsole::Read(char *into, int numBytes)
 	{
 		do
 		{
+                        DEBUG('u', "Wating here\n");
 			synchReadAvail->P();		// Block for single char
 			ch = cons->GetChar();		// Get a char (could)
+                        DEBUG('u', "Stop Waiting\n");
 		} while ( ch == EOF);
 
 		if ( (ch == '\012') || (ch == '\001') )

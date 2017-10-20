@@ -98,6 +98,7 @@ Console::CheckCharAvail()
 
     // otherwise, read character and tell user about it
     Read(readFileNo, &c, sizeof(char));
+    DEBUG('u', "New character await\n");
     incoming = c ;
     stats->numConsoleCharsRead++;
     (*readHandler)(handlerArg);	

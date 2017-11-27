@@ -49,6 +49,7 @@
 
 #define BLOCK_SIZE	32768
 #define MAX_BLOCK	32
+#define MAX_FILENAME_LEN 255
 
 #define ABS(x)		((x) < 0 ? -(x) : (x))
 
@@ -207,6 +208,15 @@ SyscallReadInt()
 void
 SyscallCreateFile()
 {
+	int strAddr = machine->ReadRegister(4);
+	char *kernelBuf = machine->User2System(strAddr, MAX_FILENAME_LEN + 1);
+	bool success = fileSystem->Create(kernelBuf, 0);
+	if (success)
+		machine->WriteRegister(2, 0);
+	else
+		machine->WriteRegister(2, -1);
+	delete[]kernelBuf;
+	machine->AdjustPCRegs();
 }
 
 void

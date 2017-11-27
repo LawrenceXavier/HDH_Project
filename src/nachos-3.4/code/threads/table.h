@@ -26,15 +26,23 @@ files, etc.
 
 */
 
+#ifndef TABLE_H
+#define TABLE_H
 
 class Table {
    public:
      // create a table to hold at most 'size' entries.
-     Table(size);
-   
+     Table(int size);
+ 
+     Table();
+
      // allocate a table slot for 'object'.
      // return the table index for the slot or -1 on error.
      int Alloc(void *object);
+
+     // allocate for an 'object' on an exact table slot
+     // return the table index for the slot or -1 on error.
+     int Set(void *object, int index);
    
      // return the object from table index 'index' or NULL on error.
      // (assert index is in range).  Leave the table entry allocated
@@ -42,8 +50,19 @@ class Table {
      void *Get(int index);
    
      // free a table slot
-     void Release(int index);
+     int Release(int index);
+
+     ~Table();
    private:
      // Your code here.
+     void **m_entries;
+
+     int m_size;
+
+     Table(const Table &table);
+
+     Table& operator = (const Table &table);
+
 };
 
+#endif

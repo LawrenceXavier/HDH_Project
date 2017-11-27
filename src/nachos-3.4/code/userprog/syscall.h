@@ -22,11 +22,11 @@
 #define SC_Exit		1
 #define SC_Exec		2
 #define SC_Join		3
-#define SC_Create	4
-#define SC_Open		5
-#define SC_Read		6
-#define SC_Write	7
-#define SC_Close	8
+// #define SC_Create	4
+// #define SC_Open		5
+// #define SC_Read		6
+// #define SC_Write	7
+// #define SC_Close	8
 #define SC_Fork		9
 #define SC_Yield	10
 
@@ -46,6 +46,15 @@
 #define SC_PrintChar	14
 #define SC_ReadString	15
 #define SC_PrintString	16
+
+// Syscall for DA2
+
+#define SC_CreateFile	17
+#define SC_Open		18
+#define SC_Read		19
+#define SC_Write	20
+#define SC_Seek		21
+#define SC_Close	22
 
 /******************* Break of new inserted code ***************/
 
@@ -94,39 +103,39 @@ int Join(SpaceId id);
  * will work for the purposes of testing out these routines.
  */
  
-/* A unique identifier for an open Nachos file. */
-typedef int OpenFileId;	
+// /* A unique identifier for an open Nachos file. */
+// typedef int OpenFileId;	
 
-/* when an address space starts up, it has two open files, representing 
- * keyboard input and display output (in UNIX terms, stdin and stdout).
- * Read and Write can be used directly on these, without first opening
- * the console device.
- */
+// /* when an address space starts up, it has two open files, representing 
+//  * keyboard input and display output (in UNIX terms, stdin and stdout).
+//  * Read and Write can be used directly on these, without first opening
+//  * the console device.
+//  */
 
-#define ConsoleInput	0  
-#define ConsoleOutput	1  
+// #define ConsoleInput	0  
+// #define ConsoleOutput	1  
  
-/* Create a Nachos file, with "name" */
-void Create(char *name);
+// /* Create a Nachos file, with "name" */
+// void Create(char *name);
 
-/* Open the Nachos file "name", and return an "OpenFileId" that can 
- * be used to read and write to the file.
- */
-OpenFileId Open(char *name);
+// /* Open the Nachos file "name", and return an "OpenFileId" that can 
+//  * be used to read and write to the file.
+//  */
+// OpenFileId Open(char *name);
 
-/* Write "size" bytes from "buffer" to the open file. */
-void Write(char *buffer, int size, OpenFileId id);
+// /* Write "size" bytes from "buffer" to the open file. */
+// void Write(char *buffer, int size, OpenFileId id);
 
-/* Read "size" bytes from the open file into "buffer".  
- * Return the number of bytes actually read -- if the open file isn't
- * long enough, or if it is an I/O device, and there aren't enough 
- * characters to read, return whatever is available (for I/O devices, 
- * you should always wait until you can return at least one character).
- */
-int Read(char *buffer, int size, OpenFileId id);
+// /* Read "size" bytes from the open file into "buffer".  
+//  * Return the number of bytes actually read -- if the open file isn't
+//  * long enough, or if it is an I/O device, and there aren't enough 
+//  * characters to read, return whatever is available (for I/O devices, 
+//  * you should always wait until you can return at least one character).
+//  */
+// int Read(char *buffer, int size, OpenFileId id);
 
-/* Close the file, we're done reading and writing to it. */
-void Close(OpenFileId id);
+// /* Close the file, we're done reading and writing to it. */
+// void Close(OpenFileId id);
 
 
 
@@ -173,6 +182,58 @@ void ReadString(char buffer[], int length);
  *	exception.cc)
  */
 void PrintString(char buffer[]);
+
+/*********************** Code for DA2 ***************************/
+
+/* A unique identifier for an open Nachos file. */
+typedef int OpenFileId;	
+
+/* when an address space starts up, it has two open files, representing 
+ * keyboard input and display output (in UNIX terms, stdin and stdout).
+ * Read and Write can be used directly on these, without first opening
+ * the console device.
+ */
+
+#define ConsoleInput	0  
+#define ConsoleOutput	1  
+
+/* Create a Nachos file, with "name" 
+ * return 0 if success
+ * return -1 if error
+ */
+int CreateFile(char *name);
+
+/* Open the Nachos file "name", and return an "OpenFileId" that can 
+ * be used to read and write to the file.
+ * return -1 if error
+ */
+OpenFileId Open(char *name);
+
+/* Write "size" bytes from "buffer" to the open file. 
+ * Return the number of bytes actually write
+ * Return -1 if error
+ * Return -2 if reach End of File
+ */
+int Write(char *buffer, int size, OpenFileId id);
+
+/* Read "size" bytes from the open file into "buffer".  
+ * Return the number of bytes actually read -- if the open file isn't
+ * long enough, or if it is an I/O device, and there aren't enough 
+ * characters to read, return whatever is available (for I/O devices, 
+ * you should always wait until you can return at least one character).
+ */
+int Read(char *buffer, int size, OpenFileId id);
+
+/* Seek to "pos" position from the beginning of file
+ * Seek to end of file if pos = -1
+ * return the pos if success
+ * return -1 if error
+ * call Seek with Console must return error
+ */
+int Seek(int pos, OpenFileId id);
+
+/* Close the file, we're done reading and writing to it. */
+void Close(OpenFileId id);
 
 /*********************** Break of new inserted code *************/
 

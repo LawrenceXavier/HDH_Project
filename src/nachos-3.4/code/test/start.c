@@ -74,45 +74,45 @@ Join:
 	j	$31
 	.end Join
 
-	.globl Create
-	.ent	Create
-Create:
-	addiu $2,$0,SC_Create
-	syscall
-	j	$31
-	.end Create
+	// .globl Create
+	// .ent	Create
+// Create:
+	// addiu $2,$0,SC_Create
+	// syscall
+	// j	$31
+	// .end Create
 
-	.globl Open
-	.ent	Open
-Open:
-	addiu $2,$0,SC_Open
-	syscall
-	j	$31
-	.end Open
+	// .globl Open
+	// .ent	Open
+// Open:
+	// addiu $2,$0,SC_Open
+	// syscall
+	// j	$31
+	// .end Open
 
-	.globl Read
-	.ent	Read
-Read:
-	addiu $2,$0,SC_Read
-	syscall
-	j	$31
-	.end Read
+	// .globl Read
+	// .ent	Read
+// Read:
+	// addiu $2,$0,SC_Read
+	// syscall
+	// j	$31
+	// .end Read
 
-	.globl Write
-	.ent	Write
-Write:
-	addiu $2,$0,SC_Write
-	syscall
-	j	$31
-	.end Write
+	// .globl Write
+	// .ent	Write
+// Write:
+	// addiu $2,$0,SC_Write
+	// syscall
+	// j	$31
+	// .end Write
 
-	.globl Close
-	.ent	Close
-Close:
-	addiu $2,$0,SC_Close
-	syscall
-	j	$31
-	.end Close
+	// .globl Close
+	// .ent	Close
+// Close:
+	// addiu $2,$0,SC_Close
+	// syscall
+	// j	$31
+	// .end Close
 
 	.globl Fork
 	.ent	Fork
@@ -180,6 +180,53 @@ PrintString:
 	j	$31
 	.end PrintString
 
+	.globl CreateFile
+	.ent	CreateFile
+CreateFile:
+	addiu $2,$0,SC_CreateFile
+	syscall
+	j	$31
+	.end CreateFile
+
+	.globl Open
+	.ent	Open
+Open:
+	addiu $2,$0,SC_Open
+	syscall
+	j	$31
+	.end Open
+
+	.globl Read
+	.ent	Read
+Read:
+	addiu $2,$0,SC_Read
+	syscall
+	j	$31
+	.end Read
+
+	.globl Write
+	.ent	Write
+Write:
+	addiu $2,$0,SC_Write
+	syscall
+	j	$31
+	.end Write
+
+	.globl Seek
+	.ent	Seek
+Seek:
+	addiu $2,$0,SC_Seek
+	syscall
+	j	$31
+	.end Seek
+
+	.globl Close
+	.ent	Close
+Close:
+	addiu $2,$0,SC_Close
+	syscall
+	j	$31
+	.end Close
 
 /************** Break of new inserted code ************/
 

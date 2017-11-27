@@ -205,6 +205,36 @@ SyscallReadInt()
 }
 
 void
+SyscallCreateFile()
+{
+}
+
+void
+SyscallOpen()
+{
+}
+
+void
+SyscallRead()
+{
+}
+
+void
+SyscallWrite()
+{
+}
+
+void
+SyscallSeek()
+{
+}
+
+void
+SyscallClose()
+{
+}
+
+void
 ExceptionHandler(ExceptionType which)
 {
 	int type = machine->ReadRegister(2);
@@ -266,6 +296,26 @@ ExceptionHandler(ExceptionType which)
 			case SC_PrintString: // Print a string
 				SyscallPrintString();
 				break;
+			case SC_CreateFile: // Create a new file
+				SyscallCreateFile();
+				break;
+			case SC_Open: // Open a file for read/read+write
+				SyscallOpen();
+				break;
+			case SC_Read: // Read a block of data from file
+				SyscallRead();
+				break;
+			case SC_Write: // Write a block of data to file
+				SyscallWrite();
+				break;
+			case SC_Seek: // Seek to a postion on file
+				SyscallSeek();
+				break;
+			case SC_Close: // Close file
+				SyscallClose();
+				break;
+
+
 			case SC_Exit:
 				// Not implemented yet
 				interrupt->Halt();
@@ -278,26 +328,26 @@ ExceptionHandler(ExceptionType which)
 				// Not implemented yet
 				interrupt->Halt();
 				break;
-			case SC_Create:
-				// Not implemented yet
-				interrupt->Halt();
-				break;
-			case SC_Open:
-				// Not implemented yet
-				interrupt->Halt();
-				break;
-			case SC_Read:
-				// Not implemented yet
-				interrupt->Halt();
-				break;
-			case SC_Write:
-				// Not implemented yet
-				interrupt->Halt();
-				break;
-			case SC_Close:
-				// Not implemented yet
-				interrupt->Halt();
-				break;
+			// case SC_Create:
+			// 	// Not implemented yet
+			// 	interrupt->Halt();
+			// 	break;
+			// case SC_Open:
+			// 	// Not implemented yet
+			// 	interrupt->Halt();
+			// 	break;
+			// case SC_Read:
+			// 	// Not implemented yet
+			// 	interrupt->Halt();
+			// 	break;
+			// case SC_Write:
+			// 	// Not implemented yet
+			// 	interrupt->Halt();
+			// 	break;
+			// case SC_Close:
+			// 	// Not implemented yet
+			// 	interrupt->Halt();
+			// 	break;
 			case SC_Fork:
 				// Not implemented yet
 				interrupt->Halt();

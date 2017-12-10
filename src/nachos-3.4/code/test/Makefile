@@ -48,7 +48,8 @@ all: 	halt 		\
 	createfile 	\
 	cat 		\
 	echo 		\
-	copy
+	copy 		\
+	reverse
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -140,3 +141,9 @@ copy.o: copy.c
 copy: copy.o start.o
 	$(LD) $(LDFLAGS) start.o copy.o -o copy.coff
 	../bin/coff2noff copy.coff copy
+
+reverse.o: reverse.c
+	$(CC) $(CFLAGS) -c reverse.c
+reverse: reverse.o start.o
+	$(LD) $(LDFLAGS) start.o reverse.o -o reverse.coff
+	../bin/coff2noff reverse.coff reverse

@@ -340,7 +340,6 @@ SyscallClose()
 {
 	OpenFileId fid = machine->ReadRegister(4);
 	int ret = fileSystem->fclose(fid);
-	machine->WriteRegister(2, ret);
 	machine->AdjustPCRegs();
 }
 

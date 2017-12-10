@@ -339,3 +339,12 @@ FileSystem::Print()
     delete freeMap;
     delete directory;
 } 
+
+int
+FileSystem::fopen(char *file_name, int type) {}
+
+int
+FileSystem::fclose(int fid) {}
+
+OpenFile*
+FileSystem::getOpenFile(int fid) {}

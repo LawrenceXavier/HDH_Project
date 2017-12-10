@@ -37,13 +37,64 @@
 
 #include "copyright.h"
 #include "openfile.h"
+#include "table.h"
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
 				// implementation is available
 class FileSystem {
+  private:
+    Table *gFileTable;
   public:
-    FileSystem(bool format) {}
+    FileSystem(bool format) {
+	gFileTable = new Table(10);
+	gFileTable->Set((void *)this, 0);
+	gFileTable->Set((void *)this, 1);
+    }
+
+    ~FileSystem() {
+	delete gFileTable;
+    }
+
+    int fopen(char *name, int type) {
+	if (type != 0 && type != 1)
+	    return -1;
+
+	int fileDescriptor = OpenForReadWrite(name, FALSE);
+	if (fileDescriptor == -1)
+	    return -1;
+
+	OpenFile *f = new OpenFile(fileDescriptor, type);
+	if (f == NULL)
+	    return -1;
+
+	int fid = gFileTable->Alloc(f);
+	if (fid == -1) {
+	    delete f;
+	    return -1;
+	}
+
+	return fid;
+    }
+
+    int fclose(int fid) {
+	if (fid < 2)
+	    return -1;
+	OpenFile *f = (OpenFile *)gFileTable->Get(fid);
+	if (f == NULL)
+		return -1;
+
+	delete f;
+	gFileTable->Release(fid);
+	return 0;
+    }
+
+    OpenFile *getOpenFile(int fid) {
+	if (fid < 2)
+	    return NULL;
+	OpenFile *f = (OpenFile *)gFileTable->Get(fid);
+	return f;
+    }
 
     bool Create(char *name, int initialSize) { 
 	int fileDescriptor = OpenForWrite(name);
@@ -85,11 +136,15 @@ class FileSystem {
 
     void Print();			// List all the files and their contents
 
+    int fopen(char *name, int type);
+    int fclose(int fid);
+    OpenFile *getOpenFile(int fid);
   private:
    OpenFile* freeMapFile;		// Bit map of free disk blocks,
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
 					// file names, represented as a file
+   Table *gFileTable;
 };
 
 #endif // FILESYS

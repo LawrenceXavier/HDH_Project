@@ -24,6 +24,7 @@ Table::~Table()
 {
 	// Do nothing
 	// Let the host destroy entries through Relase method
+	delete[]m_entries;
 }
 
 Table& Table::operator = (const Table &table)
@@ -67,7 +68,7 @@ int Table::Release(int index)
 		return -1;
 	if (m_entries[index] == NULL)
 		return -1;
-	delete[]m_entries[index];
+	//delete[]m_entries[index];
 	m_entries[index] = NULL;
 	return 0;
 }

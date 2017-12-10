@@ -158,7 +158,6 @@ SyscallPrintInt()
 void
 SyscallReadInt()
 {
-	DEBUG('u', "Get a number!\n");
 	char c;
 	int count, res;
 				// First, we have to skip all seperating characters
@@ -222,26 +221,127 @@ SyscallCreateFile()
 void
 SyscallOpen()
 {
+	int strAddr = machine->ReadRegister(4);
+	char *kernelBuf = machine->User2System(strAddr, MAX_FILENAME_LEN + 1);
+	int openType = machine->ReadRegister(5);
+	OpenFileId fid = fileSystem->fopen(kernelBuf, openType);
+	machine->WriteRegister(2, fid);
+	delete[]kernelBuf;
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallRead()
 {
+	int strAddr = machine->ReadRegister(4);
+	int charCount = machine->ReadRegister(5);
+	OpenFileId fid = machine->ReadRegister(6);
+
+	if (fid == 1 || charCount < 0) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+
+	if (fid == 0) {
+		char *kernelBuf = new char[charCount + 1];
+		int charRead = gSynchConsole->Read(kernelBuf, charCount);
+		if (charRead == -1)
+			machine->WriteRegister(2, -2);
+		else {
+			kernelBuf[charRead] = '\0';
+			machine->System2User(strAddr, charRead + 1, kernelBuf);
+			machine->WriteRegister(2, charRead);
+		}
+		delete[]kernelBuf;
+	} else {
+		OpenFile *f = fileSystem->getOpenFile(fid);
+		if (f == NULL) {
+			machine->WriteRegister(2, -1);
+		} else {
+			char *kernelBuf = new char[charCount + 1];
+			int charRead = f->Read(kernelBuf, charCount);
+			if (charRead >= 0) {
+				machine->System2User(strAddr, charRead, kernelBuf);
+				if (charRead > 0) {
+					machine->WriteRegister(2, charRead);
+				} else {
+					machine->WriteRegister(2, -2);
+				}
+			} else {
+				machine->WriteRegister(2, -1);
+			}
+			delete[]kernelBuf;
+		}
+	}
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallWrite()
 {
+	int strAddr = machine->ReadRegister(4);
+	int charCount = machine->ReadRegister(5);
+	OpenFileId fid = machine->ReadRegister(6);
+
+	if (fid == 0 || charCount < 0) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+
+	if (fid == 1) {
+		char *kernelBuf = machine->User2System(strAddr, charCount);
+		int charWritten = gSynchConsole->Write(kernelBuf, charCount);
+		machine->WriteRegister(2, charWritten);
+		delete[]kernelBuf;
+	} else {
+		OpenFile *f = fileSystem->getOpenFile(fid);
+		if (f == NULL) {
+			machine->WriteRegister(2, -1);
+		} else {
+			char *kernelBuf = machine->User2System(strAddr, charCount);
+			int charWritten = f->Write(kernelBuf, charCount);
+			if (charWritten == charCount) {
+				machine->WriteRegister(2, charCount);
+			} else {
+				machine->WriteRegister(2, -1);
+			}
+			delete[]kernelBuf;
+		}
+	}
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallSeek()
 {
+	int pos = machine->ReadRegister(4);
+	OpenFileId fid = machine->ReadRegister(5);
+
+	if (fid < 2) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+
+	OpenFile *f = fileSystem->getOpenFile(fid);
+	if (f == NULL) {
+		machine->WriteRegister(2, -1);
+	} else {
+		int new_pos = f->Seek(pos);
+		machine->WriteRegister(2, new_pos);
+	}
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallClose()
 {
+	OpenFileId fid = machine->ReadRegister(4);
+	int ret = fileSystem->fclose(fid);
+	machine->WriteRegister(2, ret);
+	machine->AdjustPCRegs();
 }
 
 void

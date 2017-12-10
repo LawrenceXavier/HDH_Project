@@ -207,7 +207,7 @@ int CreateFile(char *name);
  * be used to read and write to the file.
  * return -1 if error
  */
-OpenFileId Open(char *name);
+OpenFileId Open(char *name, int type);
 
 /* Write "size" bytes from "buffer" to the open file. 
  * Return the number of bytes actually write

@@ -63,7 +63,11 @@ SwapHeader (NoffHeader *noffH)
 AddrSpace::AddrSpace(OpenFile *executable)
 {
     NoffHeader noffH;
-    unsigned int i, size;
+    unsigned int i, size, j;
+	unsigned int numCodePage, numDataPage;	
+	int lastCodePageSize, lastDataPageSize, firstDataPageSize, tempDataSize;
+
+//	OpenFile* executable = fileSystem->Open(filename);
 
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && 

@@ -35,6 +35,9 @@ Machine *machine;	// user program memory and registers
 #ifdef USER_PROGRAM
 SynchConsole *gSynchConsole;
 #endif
+
+BitMap *gPhysPageBitMap;
+
 /****************** End of new inserted code *******************/
 
 #ifdef NETWORK

@@ -44,6 +44,9 @@ extern FileSystem  *fileSystem;
 #include "synchcons.h"
 extern SynchConsole *gSynchConsole;
 #endif
+
+#include "bitmap.h"
+extern BitMap *gPhysPageBitMap;
 /****************** Bread of new inserted code ***********/
 
 #ifdef FILESYS

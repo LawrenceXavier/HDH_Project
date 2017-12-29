@@ -80,7 +80,8 @@ USERPROG_H = ../userprog/addrspace.h\
 	../threads/table.h\
 	../threads/pcb.h\
 	../threads/ptable.h\
-	../threads/sem.h
+	../threads/sem.h\
+	../threads/stable.h
 
 USERPROG_C = ../userprog/addrspace.cc\
 	../userprog/bitmap.cc\
@@ -94,10 +95,11 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../threads/table.cc\
 	../threads/pcb.cc\
 	../threads/ptable.cc\
-	../threads/sem.cc
+	../threads/sem.cc\
+	../threads/stable.cc
 
 USERPROG_O = addrspace.o bitmap.o exception.o progtest.o console.o machine.o \
-	mipssim.o translate.o synchcons.o table.o pcb.o ptable.o sem.o
+	mipssim.o translate.o synchcons.o table.o pcb.o ptable.o sem.o stable.o
 
 VM_H = 
 VM_C = 

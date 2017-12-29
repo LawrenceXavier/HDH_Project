@@ -10,6 +10,8 @@ private:
 	char name[MAX_SEMNAME_LEN];
 	Semaphore* sem;
 public:
+	bool isExist;
+
 	Sem(char* semname, int i);
 	~Sem();
 

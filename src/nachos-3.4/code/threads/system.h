@@ -49,7 +49,7 @@ extern SynchConsole *gSynchConsole;
 extern BitMap *gPhysPageBitMap;
 
 #include "synch.h"
-extern Semaphore* addrLock;
+extern Lock* addrLock;
 
 #include "stable.h"
 extern STable* semTab;

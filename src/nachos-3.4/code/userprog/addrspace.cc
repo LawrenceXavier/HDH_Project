@@ -74,7 +74,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
     	SwapHeader(&noffH);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
-	// addrLock->Acquire();
+	addrLock->Acquire();
 
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size 
@@ -105,7 +105,6 @@ AddrSpace::AddrSpace(OpenFile *executable)
 		bzero(&(machine->mainMemory[pageTable[i].physicalPage*PageSize]), PageSize);
     }
     
-	/*
 	addrLock->Release();
 
 	numCodePage = divRoundUp(noffH.code.size, PageSize);
@@ -138,12 +137,12 @@ AddrSpace::AddrSpace(OpenFile *executable)
 
 	for (j = 0; j < numDataPage; ++j) {
 		executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr])+pageTable[i].physicalPage*PageSize,
-			(j < numPageSize-1) ? PageSize : lastDataPageSize, 
+			(j < numDataPage-1) ? PageSize : lastDataPageSize, 
 			noffH.initData.inFileAddr+j*PageSize+firstDataPageSize);
 		++i;
 	}
-	*/
 	
+	/*
 	// zero out the entire address space, to zero the unitialized data segment 
 	// and the stack segment
 	
@@ -162,7 +161,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
         executable->ReadAt(&(machine->mainMemory[noffH.initData.virtualAddr]),
 			noffH.initData.size, noffH.initData.inFileAddr);
     }
-	
+	*/
 }
 
 //----------------------------------------------------------------------

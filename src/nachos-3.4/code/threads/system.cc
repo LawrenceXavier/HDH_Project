@@ -35,7 +35,7 @@ Machine *machine;	// user program memory and registers
 #ifdef USER_PROGRAM
 SynchConsole *gSynchConsole;
 BitMap *gPhysPageBitMap;
-Semaphore* addrLock;
+Lock* addrLock;
 STable* semTab;
 PTable* pTab;
 #endif

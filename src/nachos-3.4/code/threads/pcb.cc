@@ -7,6 +7,9 @@ PCB::PCB() {
 	exitcode = 0;
 	numwait = 0;
 	thread = NULL;
+	joinID = -1;
+	joinExitcode = 0;
+	isExit = 0;
 	joinsem = new Semaphore("joinsem", 0);
 	exitsem = new Semaphore("exitsem", 0);
 	mutex = new Semaphore("multex", 1);
@@ -72,20 +75,30 @@ int PCB::GetNumWait() {
 	return numwait;
 }
 
-void PCB::JoinWait() {
+void PCB::JoinWait(int joinid) {
+	if (joinID != -1) return;
+	joinID = joinid;
 	joinsem->P();
 }
 
 void PCB::ExitWait() {
-	exitsem->P();
+	if (numwait > 0) {
+		isExit = 1;
+		exitsem->P();
+	}
 }
 
-void PCB::JoinRelease() {
+void PCB::JoinRelease(int joinid, int joinexitcode) {
+	if (joinID != joinid) return;
+	joinID = -1;
+	joinExitcode = joinexitcode;
 	joinsem->V();
 }
 
 void PCB::ExitRelease() {
-	exitsem->V();
+	if (numwait == 0 && isExit == 1) {
+		exitsem->V();
+	}
 }
 
 void PCB::IncNumWait() {

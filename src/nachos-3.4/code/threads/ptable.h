@@ -20,10 +20,13 @@ public:
 	int ExecUpdate(char* filename);
 	int ExitUpdate(int ec);
 	int JoinUpdate(int id);
+// implemented inside
+/*  
 	int GetFreeSlot();
 	bool IsExist(int pid);
 	void Remove(int pid);
 	char* GetFileName(int id);
+*/
 };
 
 #endif

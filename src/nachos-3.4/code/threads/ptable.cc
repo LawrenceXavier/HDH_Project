@@ -79,12 +79,57 @@ int PTable::ExecUpdate(char* filename) {
 }
 
 int PTable::ExitUpdate(int ec) {
+	int pid = -1;
+	for (int i = 0; i < MAX_PROCESS; ++i) {
+		if (pcb[i]) {
+			if (pcb[i]->GetThread() == currentThread) {
+				pid = i;
+				break;
+			}
+		}
+	}	
+
+	if (pid == -1) return -1;
+	int parentid = pcb[pid]->parentID;
+	pcb[pid]->ExitWait();
+
+	if (parentid == -1) {
+		interrupt->Halt();
+		return 0;
+	}
+	else {
+		pcb[parentid]->JoinRelease(pid, ec);
+		pcb[parentid]->DecNumWait();
+		pcb[parentid]->ExitRelease();
+		delete pcb[pid];
+		pcb[pid] = NULL;
+		bm->Clear(pid);
+		delete currentThread->space;
+		currentThread->Finish();
+		return 0;
+	}
 }
 
 int PTable::JoinUpdate(int id) {
+	if (id < 0 || id >= MAX_PROCESS) return -1;
+	if (bm->Test(id) == 0) return -1;
+	int pid = -1;
+	for (int i = 0; i < MAX_PROCESS; ++i) {
+		if (pcb[i] == NULL) continue;
+		if (pcb[i]->GetThread() == currentThread) {
+			pid = i;
+			break;
+		}
+	}
 
+	if (pid == -1) return -1;
+	if (pcb[id]->parentID != pid) return -1;
+	
+	pcb[pid]->JoinWait(id);
+	int ec = pcb[pid]->joinExitcode;
+	return ec;
 }
-
+/*
 int PTable::GetFreeSlot() {
 
 }
@@ -100,3 +145,4 @@ void PTable::Remove(int pid) {
 char* PTable::GetFileName(int id) {
 
 }
+*/

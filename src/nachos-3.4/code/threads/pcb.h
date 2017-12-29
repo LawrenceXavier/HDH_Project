@@ -17,8 +17,11 @@ private:
 	int pID;				// process ID
 	int exitcode;
 	int numwait;
+	int joinID;
+	int isExit;
 public:
 	int parentID;
+	int joinExitcode;
 
 	PCB();
 	~PCB();
@@ -27,9 +30,9 @@ public:
 	const Thread* GetThread(); 
 	int GetID();
 	int GetNumWait();
-	void JoinWait();
+	void JoinWait(int joinid);
 	void ExitWait();
-	void JoinRelease();
+	void JoinRelease(int joinid, int joinexitcode);
 	void ExitRelease();
 	void IncNumWait();
 	void DecNumWait();

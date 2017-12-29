@@ -24,6 +24,7 @@ public:
 	~PCB();
 
 	int Exec(char* filename, int pid, int parentid);
+	const Thread* GetThread(); 
 	int GetID();
 	int GetNumWait();
 	void JoinWait();

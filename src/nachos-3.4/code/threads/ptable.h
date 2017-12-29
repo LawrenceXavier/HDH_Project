@@ -9,7 +9,7 @@
 
 class PTable {
 private:
-	BitMap bm;
+	BitMap* bm;
 	PCB* pcb[MAX_PROCESS];
 	int psize;
 	Semaphore* bmsem;
@@ -17,7 +17,7 @@ public:
 	PTable(int size);
 	~PTable();
 
-	int ExecUpdate(char* name);
+	int ExecUpdate(char* filename);
 	int ExitUpdate(int ec);
 	int JoinUpdate(int id);
 	int GetFreeSlot();

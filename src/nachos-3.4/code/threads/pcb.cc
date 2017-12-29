@@ -111,3 +111,7 @@ void PCB::SetFileName(char* fn) {
 const char* PCB::GetFileName() {
 	return fileName;
 }
+
+const Thread* PCB::GetThread() {
+	return thread;
+}

@@ -41,12 +41,24 @@ extern FileSystem  *fileSystem;
 
 /****************** New inserted code here ***************/
 #ifdef USER_PROGRAM
+
 #include "synchcons.h"
 extern SynchConsole *gSynchConsole;
-#endif
 
 #include "bitmap.h"
 extern BitMap *gPhysPageBitMap;
+
+#include "synch.h"
+extern Semaphore* addrLock;
+
+#include "stable.h"
+extern STable* semTab;
+
+#include "ptable.h"
+extern PTable* pTab;
+
+#endif
+
 /****************** Bread of new inserted code ***********/
 
 #ifdef FILESYS

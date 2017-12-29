@@ -129,20 +129,3 @@ int PTable::JoinUpdate(int id) {
 	int ec = pcb[pid]->joinExitcode;
 	return ec;
 }
-/*
-int PTable::GetFreeSlot() {
-
-}
-
-bool PTable::IsExist(int pid) {
-
-}
-
-void PTable::Remove(int pid) {
-
-}
-
-char* PTable::GetFileName(int id) {
-
-}
-*/

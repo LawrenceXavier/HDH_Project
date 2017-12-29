@@ -4,23 +4,26 @@
 #include "synch.h"
 #include "thread.h"
 
+#define MAX_FILENAME_LEN 255
+
 class PCB {
 private:
 	Semaphore* joinsem;
 	Semaphore* exitsem;
-	Semaphore* multex;
+	Semaphore* mutex;
 	Thread* thread;
+	char fileName[MAX_FILENAME_LEN+1];
 
-	int pid;
+	int pID;				// process ID
 	int exitcode;
 	int numwait;
 public:
 	int parentID;
 
-	PCB(int id);
+	PCB();
 	~PCB();
 
-	int Exec(char* filename, int pid);
+	int Exec(char* filename, int pid, int parentid);
 	int GetID();
 	int GetNumWait();
 	void JoinWait();
@@ -32,7 +35,7 @@ public:
 	void SetExitCode(int ec);
 	int GetExitCode();
 	void SetFileName(char* fn);
-	char* GetFileName();
+	const char* GetFileName();
 };
 
 #endif

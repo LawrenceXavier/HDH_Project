@@ -344,6 +344,35 @@ SyscallClose()
 }
 
 void
+SyscallExec()
+{
+}
+
+void
+SyscallJoin()
+{
+}
+
+void
+SyscallExit()
+{
+}
+
+void
+SyscallCreateSemaphore()
+{
+}
+
+void SyscallWait()
+{
+}
+
+void
+SyscallSignal()
+{
+}
+
+void
 ExceptionHandler(ExceptionType which)
 {
 	int type = machine->ReadRegister(2);
@@ -426,16 +455,22 @@ ExceptionHandler(ExceptionType which)
 
 
 			case SC_Exit:
-				// Not implemented yet
-				interrupt->Halt();
+				// interrupt->Halt();
+				SyscallExit();
 				break;
 			case SC_Exec:
-				// Not implemented yet
-				interrupt->Halt();
+				// interrupt->Halt();
+				SyscallExec();
 				break;
 			case SC_Join:
-				// Not implemented yet
-				interrupt->Halt();
+				// interrupt->Halt();
+				SyscallJoin();
+				break;
+			case SC_Wait:
+				SyscallWait();
+				break;
+			case SC_Signal:
+				SyscallSignal();
 				break;
 			// case SC_Create:
 			// 	// Not implemented yet
@@ -464,6 +499,9 @@ ExceptionHandler(ExceptionType which)
 			case SC_Yield:
 				// Not implemented yet
 				interrupt->Halt();
+				break;
+			case SC_CreateSemaphore:
+				SyscallCreateSemaphore();
 				break;
 			default:
 				printf("Unexpected user mode exception %d %d\n", which, type);

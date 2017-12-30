@@ -56,6 +56,11 @@
 #define SC_Seek		21
 #define SC_Close	22
 
+// Syscall for DA3
+#define SC_CreateSemaphore 23
+#define SC_Wait		24
+#define SC_Signal	25
+
 /******************* Break of new inserted code ***************/
 
 
@@ -76,10 +81,6 @@ void Halt();
  
 
 /* Address space control operations: Exit, Exec, and Join */
-
-/* This user program is done (status = 0 means exited normally). */
-void Exit(int status);	
-
 /* A unique identifier for an executing user program (address space) */
 typedef int SpaceId;	
  
@@ -92,7 +93,27 @@ SpaceId Exec(char *name);
  * Return the exit status.
  */
 int Join(SpaceId id); 	
- 
+
+/* This user program is done (status = 0 means exited normally). */
+void Exit(int exitCode);	
+
+/* Create semaphore 
+ * return 0 on success,
+ * return -1 otherwise
+ */
+int CreateSemaphore(char *name, int semval);
+
+/* Wait
+ * return 0 on success,
+ * return -1 otherwise
+ */
+int Wait(char *name);
+
+/* Signal
+ * return 0 on success,
+ * return -1 otherwise
+ */
+int Signal(char *name);
 
 /* File system operations: Create, Open, Read, Write, Close
  * These functions are patterned after UNIX -- files represent

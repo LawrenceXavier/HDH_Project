@@ -18,6 +18,7 @@ PTable::~PTable() {
 }
 
 int PTable::ExecUpdate(char* filename) {
+	DEBUG('u', "Start to excute a threads\n");
 	bmsem->P();
 
 	if (filename == NULL) {
@@ -27,6 +28,7 @@ int PTable::ExecUpdate(char* filename) {
 
 	OpenFile* executable = fileSystem->Open(filename);	
 	if (executable == NULL) {
+		DEBUG('u', "Unable to open executable file\n");
 		bmsem->V();
 		return -1;
 	}
@@ -41,6 +43,7 @@ int PTable::ExecUpdate(char* filename) {
 	}
 	else {
 		if (strncmp(currentThread->getName(), filename, MAX_FILENAME_LEN) == 0) {
+			DEBUG('u', "Fail at strncmp\n");
 			bmsem->V();
 			return -1;
 		}
@@ -53,12 +56,14 @@ int PTable::ExecUpdate(char* filename) {
 				}
 
 		if (parentid == -1) {
+			DEBUG('u', "Fail at parentid\n");
 			bmsem->V();
 			return -1;
 		}	
 
 		pid = bm->Find();
 		if (pid == -1) {
+			DEBUG('u', "Fail at pid\n");
 			bmsem->V();
 			return -1;
 		}
@@ -67,6 +72,7 @@ int PTable::ExecUpdate(char* filename) {
 	pcb[pid] = new PCB();
 	int ret = pcb[pid]->Exec(filename, pid, parentid);
 	if (ret == -1) {
+		DEBUG('u', "Fail at Exec\n");
 		bm->Clear(pid);
 		delete pcb[pid];
 		bmsem->V();

@@ -79,12 +79,18 @@ void SyscallPrintString() {	// void PrintString(char[] buffer);
 	// The maximum block can be printed is MAX_BLOCK, so the total number
 	//	of character that can be printed is MAX_BLOCK * BLOCK_SIZE
 	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
 	int i;
 
 	for (i = 0; i < MAX_BLOCK; ++i) {
 		char *kernelBuff = machine->User2System(strAddr + i * BLOCK_SIZE, BLOCK_SIZE);
 					// Transfer BLOCK_SIZE characters from
 					//	User Space to Kernel Space
+#define MAX_SEM_NAME 255
 		int cnt = 0;
 		while (cnt < BLOCK_SIZE && kernelBuff[cnt] != '\0')
 			++cnt;		// Count number of characters will be
@@ -102,6 +108,11 @@ void SyscallPrintString() {	// void PrintString(char[] buffer);
 
 void SyscallReadString() { 	// void ReadString(char[] buffer, int length);
 	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
 	int len = machine->ReadRegister(5);
 
 	char* kernelBuff = new char[len + 1];   // reserve a position for \0
@@ -148,6 +159,7 @@ SyscallPrintInt()
 		tmp = str[i];
 		str[i] = str[j];
 		str[j] = tmp;
+#define MAX_SEM_NAME 255
 	}
 	gSynchConsole->Write(str, len); // Print str to SynchConsole
 	machine->AdjustPCRegs();
@@ -208,6 +220,11 @@ void
 SyscallCreateFile()
 {
 	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
 	char *kernelBuf = machine->User2System(strAddr, MAX_FILENAME_LEN + 1);
 	bool success = fileSystem->Create(kernelBuf, 0);
 	if (success)
@@ -222,6 +239,11 @@ void
 SyscallOpen()
 {
 	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
 	char *kernelBuf = machine->User2System(strAddr, MAX_FILENAME_LEN + 1);
 	int openType = machine->ReadRegister(5);
 	OpenFileId fid = fileSystem->fopen(kernelBuf, openType);
@@ -234,6 +256,11 @@ void
 SyscallRead()
 {
 	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
 	int charCount = machine->ReadRegister(5);
 	OpenFileId fid = machine->ReadRegister(6);
 
@@ -281,6 +308,11 @@ void
 SyscallWrite()
 {
 	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
 	int charCount = machine->ReadRegister(5);
 	OpenFileId fid = machine->ReadRegister(6);
 
@@ -346,30 +378,79 @@ SyscallClose()
 void
 SyscallExec()
 {
+	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+	char *kernelBuf = machine->User2System(strAddr, MAX_FILENAME_LEN + 1);
+	int res = pTab->ExecUpdate(kernelBuf);
+	machine->WriteRegister(2, res);
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallJoin()
 {
+	int tid = machine->ReadRegister(4);
+	int res = pTab->JoinUpdate(tid);
+	machine->WriteRegister(2, res);
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallExit()
 {
+	int exitCode = machine->ReadRegister(4);
+	int res = pTab->ExitUpdate(exitCode);
+	machine->WriteRegister(2, res);
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallCreateSemaphore()
 {
+	int strAddr = machine->ReadRegister(4);
+	int semVal = machine->ReadRegister(5);
+	if (strAddr == 0 || semVal < 0) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+	char *kernelBuf = machine->User2System(strAddr, MAX_SEMNAME_LEN + 1);
+	int res = semTab->create(kernelBuf, semVal);
+	machine->WriteRegister(2, res);
+	machine->AdjustPCRegs();
 }
 
 void SyscallWait()
 {
+	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+	char *kernelBuf = machine->User2System(strAddr, MAX_SEMNAME_LEN + 1);
+	int res = semTab->wait(kernelBuf);
+	machine->WriteRegister(2, res);
+	machine->AdjustPCRegs();
 }
 
 void
 SyscallSignal()
 {
+	int strAddr = machine->ReadRegister(4);
+	if (!strAddr) {
+		machine->WriteRegister(2, -1);
+		machine->AdjustPCRegs();
+		return;
+	}
+	char *kernelBuf = machine->User2System(strAddr, MAX_SEM_NAME + 1);
+	int res = semTab->signal(kernelBuf);
+	machine->WriteRegister(2, res);
+	machine->AdjustPCRegs();
 }
 
 void

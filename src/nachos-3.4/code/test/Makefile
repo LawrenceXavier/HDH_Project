@@ -49,7 +49,10 @@ all: 	halt 		\
 	cat 		\
 	echo 		\
 	copy 		\
-	reverse
+	reverse 	\
+	main 		\
+	sinhvien 	\
+	voinuoc
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -147,3 +150,21 @@ reverse.o: reverse.c
 reverse: reverse.o start.o
 	$(LD) $(LDFLAGS) start.o reverse.o -o reverse.coff
 	../bin/coff2noff reverse.coff reverse
+
+main.o: main.c
+	$(CC) $(CFLAGS) -c main.c
+main: main.o start.o
+	$(LD) $(LDFLAGS) start.o main.o -o main.coff
+	../bin/coff2noff main.coff main
+
+sinhvien.o: sinhvien.c
+	$(CC) $(CFLAGS) -c sinhvien.c
+sinhvien: sinhvien.o start.o
+	$(LD) $(LDFLAGS) start.o sinhvien.o -o sinhvien.coff
+	../bin/coff2noff sinhvien.coff sinhvien
+
+voinuoc.o: voinuoc.c
+	$(CC) $(CFLAGS) -c voinuoc.c
+voinuoc: voinuoc.o start.o
+	$(LD) $(LDFLAGS) start.o voinuoc.o -o voinuoc.coff
+	../bin/coff2noff voinuoc.coff voinuoc

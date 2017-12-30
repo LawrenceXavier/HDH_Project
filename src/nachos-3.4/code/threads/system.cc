@@ -35,7 +35,7 @@ Machine *machine;	// user program memory and registers
 #ifdef USER_PROGRAM
 SynchConsole *gSynchConsole;
 BitMap *gPhysPageBitMap;
-Lock* addrLock;
+Semaphore* addrLock;
 STable* semTab;
 PTable* pTab;
 #endif
@@ -167,6 +167,18 @@ Initialize(int argc, char **argv)
 #ifdef USER_PROGRAM
     gSynchConsole = new SynchConsole();
     ASSERT(gSynchConsole != NULL);
+
+	addrLock = new Semaphore("addrLock", 1);
+	ASSERT(addrLock != NULL);
+
+	gPhysPageBitMap = new BitMap(NumPhysPages);
+	ASSERT(gPhysPageBitMap != NULL);
+
+	semTab = new STable();
+	ASSERT(semTab != NULL);
+
+	pTab = new PTable();
+	ASSERT(pTab != NULL);
 #endif
 /******************* Bread of new inserted code ************/
 

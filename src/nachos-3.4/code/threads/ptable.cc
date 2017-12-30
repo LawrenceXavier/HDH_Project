@@ -1,10 +1,9 @@
 #include "system.h"
 #include "ptable.h"
 
-PTable::PTable(int size) {
+PTable::PTable() {
 	bm = new BitMap(MAX_PROCESS);
 	bmsem = new Semaphore("bmsem", 1);
-	psize = size;
 	for (int i = 0; i < MAX_PROCESS; ++i) {
 		pcb[i] = NULL;
 	}

@@ -11,10 +11,9 @@ class PTable {
 private:
 	BitMap* bm;
 	PCB* pcb[MAX_PROCESS];
-	int psize;
 	Semaphore* bmsem;
 public:
-	PTable(int size);
+	PTable();
 	~PTable();
 
 	int ExecUpdate(char* filename);

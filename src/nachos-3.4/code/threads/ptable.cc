@@ -72,7 +72,7 @@ int PTable::ExecUpdate(char* filename) {
 	pcb[pid] = new PCB();
 	int ret = pcb[pid]->Exec(filename, pid, parentid);
 	if (ret == -1) {
-		DEBUG('u', "Fail at Exec\n");
+		DEBUG('u', "Fail at Exec %d\n", pid);
 		bm->Clear(pid);
 		delete pcb[pid];
 		bmsem->V();

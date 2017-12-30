@@ -81,6 +81,8 @@ AddrSpace::AddrSpace(OpenFile *executable)
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
+    DEBUG('u', "Numpage: %d\n", numPages);
+
     ASSERT(numPages <= gPhysPageBitMap->NumClear());		// check we're not trying
 						// to run anything too big --
 						// at least until we have

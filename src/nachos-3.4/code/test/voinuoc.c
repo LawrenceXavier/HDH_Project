@@ -40,10 +40,12 @@ int main()
 		Signal("lock_file");
 		if (s_1 <= s_2) {
 			s_1 += n;
-			Write("1 ", 2, f_tmp);
+			if (n > 0)
+				Write("1 ", 2, f_tmp);
 		} else {
 			s_2 += n;
-			Write("2 ", 2, f_tmp);
+			if (n > 0)
+				Write("2 ", 2, f_tmp);
 		}
 	}
 	Write("\n", 1, f_tmp);

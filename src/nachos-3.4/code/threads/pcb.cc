@@ -31,7 +31,8 @@ void exec_func(int) {
 int PCB::Exec(char* filename, int pid, int parentid) {
 	mutex->P();
 
-	if (filename == NULL || pID < 0 || thread != NULL) {
+	if (filename == NULL || pid < 0 || thread != NULL) {
+                DEBUG('u', "Heyayayay %d %d %d\n", filename, pID, thread);
 		mutex->V();
 		return -1;
 	}

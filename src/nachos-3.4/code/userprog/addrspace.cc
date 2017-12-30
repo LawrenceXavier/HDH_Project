@@ -68,13 +68,14 @@ AddrSpace::AddrSpace(OpenFile *executable)
 	unsigned int numCodePage, numDataPage;	
 	int lastCodePageSize, lastDataPageSize, firstDataPageSize, tempDataSize;
 
+	addrLock->P();
+
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && 
 		(WordToHost(noffH.noffMagic) == NOFFMAGIC))
     	SwapHeader(&noffH);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
-	addrLock->Acquire();
 
 // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size 
@@ -105,7 +106,6 @@ AddrSpace::AddrSpace(OpenFile *executable)
 		bzero(&(machine->mainMemory[pageTable[i].physicalPage*PageSize]), PageSize);
     }
     
-	addrLock->Release();
 
 	numCodePage = divRoundUp(noffH.code.size, PageSize);
 	
@@ -141,6 +141,8 @@ AddrSpace::AddrSpace(OpenFile *executable)
 			noffH.initData.inFileAddr+j*PageSize+firstDataPageSize);
 		++i;
 	}
+
+	addrLock->V();
 	
 	/*
 	// zero out the entire address space, to zero the unitialized data segment 
